@@ -1,0 +1,207 @@
+/* You can add global styles to this file, and also import other style files */
+
+// @import './styles/variables';
+
+:root {
+    --color-good: #1DB954;
+    --color-bad: rgb(228, 53, 53);
+
+    --color-light: #ffffff;
+    --color-dark: #000000;
+
+    --color-studio-font: #666666;
+    --color-studio-line: #999999;
+
+    --color-primary-6: #282828;
+    --color-primary-5: #585858;
+    --color-primary-4: #979797;
+    --color-primary-3: #dadada;
+    --color-primary-2: #f1f1f1;
+    --color-primary-1: #ffffff;
+
+    --color-accent-5: #501012;
+    --color-accent-4: #a3201f;
+    --color-accent-3: #f5ac8d;
+    --color-accent-2: #ffefb0;
+    --color-accent-1: #48ffa0;
+
+    --size-1: 6rem;
+    --size-2: 3rem;
+    --size-3: 2rem;
+    --size-4: 1.5rem;
+    --size-5: 1rem;
+
+    --border-radius-m: 12px;
+    --border-radius-s: 4px;
+
+    --box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%), 
+    0px 4px 5px 0px rgb(0 0 0 / 14%), 
+    0px 1px 10px 0px rgb(0 0 0 / 12%);
+
+}
+
+
+* { 
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    box-sizing: border-box;
+    font-size: 62.5%; // 1rem = 10px, 10px/16px = 62.5%
+    height: 100%;
+}
+
+body {
+    font-family: "Open Sans";//, Roboto, "Helvetica Neue", sans-serif; 
+    height: 100vh;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+
+.card{
+    // margin: 1rem;
+    border-radius: var(--border-radius-m);
+    box-shadow: var(--box-shadow);
+}
+
+// BUTTON
+.button{
+    text-decoration: none;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0.5rem 1rem;
+    font-size: var(--size-4); 
+    box-shadow: var(--box-shadow);
+    border: none;
+    border-radius: var(--border-radius-s);
+    cursor: pointer;
+    color: var(--color-light);
+    background-color: var(--color-primary-5);
+    &:active{
+        transform: translateY(2px);
+        background-color: var(--color-primary-4);
+    }
+    &.selected{
+        transform: translateY(2px);
+        background-color: var(--color-primary-4);
+        box-shadow: none;
+    }
+}
+
+// TEXT INPUT
+input[type=text]{
+    width: 100%;
+    // padding: 1.2rem 2rem;
+    // margin: 0.8rem 0;
+    padding: 0.25rem;
+    display: inline-block;
+    border: 3px solid var(--color-primary-5);
+    border-radius: var(--border-radius-s);
+    box-sizing: border-box;
+}
+
+
+// SLIDER
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--color-primary-5);
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+// DROPDOWN SELECT
+select {
+    /* Reset Select */
+    appearance: none;
+    outline: 0;
+    border: 0;
+    box-shadow: none;
+    /* Personalize */
+    flex: 1;
+    padding: 0 1em;
+    color: var(--color-light);
+    background-color: var(--color-primary-5);
+    background-image: none;
+    cursor: pointer;
+    font-size: var(--size-4);
+}
+/* Remove IE arrow */
+select::-ms-expand {
+    display: none;
+}
+  /* Custom Select wrapper */
+.select {
+    position: relative;
+    display: flex;
+    width: 20em;
+    height: 3em;
+    border-radius: var(--border-radius-s);
+    overflow: hidden;
+}
+  /* Arrow */
+.select::after {
+    content: '\25BC';
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--color-primary-5);
+    transition: .25s all ease;
+    pointer-events: none;
+    padding: 0.75rem;
+    option{
+        height: 2rem;
+    }
+}
+  /* Transition */
+.select:hover::after {
+    color: var(--color-primary-1);
+}
+
+
+
+.scrollbar{
+    &::-webkit-scrollbar {
+        width: 4px;
+        overflow-y: scroll;
+        background: var(--color-primary-3);
+        box-shadow: inset 0 0 4px var(--color-primary-2);
+    }
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-primary-4);
+        border-radius: 10px;
+    }
+}

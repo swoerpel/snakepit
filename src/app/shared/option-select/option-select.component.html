@@ -1,0 +1,13 @@
+<div class="container card">
+    <div *ngIf="label !== null" class="row label subtitle ">{{label}}</div>
+    <div *ngIf="(value$ | async) as selectedValue" class="row">
+        <button *ngFor="let value of values;" 
+            (click)="updateFunct(value)" 
+            class="button action subtitle"
+            [ngClass]="value === selectedValue ? 'selected' : ''"
+            >
+            {{value}}
+        </button>
+    </div>
+</div>
+

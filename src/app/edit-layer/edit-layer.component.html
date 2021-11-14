@@ -1,0 +1,99 @@
+<div class="input-row">
+    <div class="cell">
+        <div class="label">Display: </div>
+        <div (click)="toggleDisplayLayer()" class="checkbox">
+            <div *ngIf="layer.display" class="checkmark">&#10004;</div>
+        </div>
+    </div>
+    <div class="cell right">
+        <button class="button action">Duplicate</button>
+        <button class="button action">Delete</button>
+    </div>
+</div>
+
+<div class="input-row">
+    <div class="cell grow">
+        <div class="label">Opacity: </div>
+        <div class="slider-container">
+            <input [formControl]="opacityFormControl" min="0" max="100" type="range" class="slider">
+        </div>
+    </div>
+</div>
+
+<div class="input-row">
+    <div [formGroup]="dimsFormGroup" class="cell">
+        <div class="label">Dims: </div>
+        <input formControlName="width" type="text" class="input">
+        <div class="label middle">X</div>
+        <input formControlName="height" type="text" class="input">
+    </div>
+    <div class="cell right">
+        <button (click)="updateLayerDims()" 
+            class="button action">
+            Update
+        </button>
+    </div>
+</div>
+
+<div class="input-row">
+    <div class="cell grow">
+        <div class="label">Algorithm: </div>
+        <div class="select selection">
+            <select [formControl]="algorithmFormControl">
+                <option *ngFor="let algorithm of gridAlgorithms" 
+                    [value]="algorithm">
+                    {{algorithm}}
+                </option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="input-row">
+    <div class="cell">
+        <div class="label">Max Value: </div>
+        <input [formControl]="maxValueFormControl" type="text" class="input">
+    </div>
+    <div class="cell right">
+        <button (click)="updateAlgorithmMaxValue()" 
+            class="button action">
+            Update
+        </button>
+    </div>
+</div>
+
+<div class="section bottom card">
+    <div class="input-row">
+        <div class="cell grow">
+            <div class="label">Palette: </div>
+            <div class="select selection">
+                <select [formControl]="paletteFormControl" class="scrollbar">
+                    <option *ngFor="let palette of palettes" 
+                        [value]="palette">
+                        {{palette}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="color-row">
+        <div *ngFor="let color of colorPalette" 
+            (click)="selectPaletteColor(color)"
+            [ngStyle]="{'background-color': color}"
+            [ngClass]="color === selectedPaletteColor ? 'selected': ''"
+            class="color">
+        </div>
+    </div>
+
+    <div class="color-row">
+        <div *ngFor="let color of activeColors; let i = index" 
+            (click)="selectActiveColor(i)"
+            [ngStyle]="{'background-color': color}"
+            class="color">
+        </div>
+    </div>
+
+
+    
+</div>

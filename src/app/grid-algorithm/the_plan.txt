@@ -1,0 +1,11 @@
+image snake algorithm
+
+1. load image
+2. pixelize at desired cell size (gridify)
+3. sort pixels by value (start with dark to light)
+4. choose starting point for snake
+5. let snake jump from high to low value cells
+6. snake stops when trapped
+7. goback to 4. repeat with new start point
+
+8. repeate with multiple cell sizes and overlay images

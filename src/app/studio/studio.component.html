@@ -1,0 +1,20 @@
+ <div class="column preview card">
+    <div class="display" id="canvas"></div>    
+ </div>
+ <div class="column controls card">
+    <div class="tab-group">
+        <div *ngFor="let layer of (layers$ | async)" 
+            (click)="setSelectedLayerIndex(layer.index)"
+            [ngClass]="layer.index === (selectedLayerIndex$ | async) ? 'highlighted' : ''"
+            class="tab">
+            {{layer.index + 1}}
+        </div>
+        <div (click)="addNewLayer()" class="tab highlighted">+</div>
+    </div>
+    <div class="tab-content card">
+        <app-edit-layer *ngIf="(selectedLayer$ | async) as layer" 
+            [layer]="layer">
+        </app-edit-layer>
+    </div>
+    
+ </div>

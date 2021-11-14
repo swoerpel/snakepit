@@ -1,0 +1,12 @@
+<div  class="container card">
+    <div *ngIf="label !== null" class="row label subtitle ">{{label}}</div>
+    <div *ngIf="{'value':(value$ | async)} as obj" class="row">
+        <button (click)="updateFunct(obj.value - 1)" class="button">
+            <div class="action arrow arrow__left"></div>
+        </button>
+        <div class="display title">{{obj.value}}</div>
+        <button (click)="updateFunct(obj.value + 1)" class="button">
+            <div class="action arrow arrow__right"></div>
+        </button>
+    </div>
+</div>
