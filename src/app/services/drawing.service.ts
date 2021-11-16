@@ -11,7 +11,8 @@ export class DrawingService {
         xScale,
         yScale,
         radius = 0.002,
-        fill = 'white'
+        fill = 'white',
+        opacity = 1
       ): void{
         const gridGroup = svg.append('g')
           .selectAll('circle')
@@ -21,7 +22,8 @@ export class DrawingService {
           .attr('cx', d => xScale(d.x))
           .attr('cy', d => yScale(d.y))
           .attr('r', xScale(radius))
-          .attr('fill', fill);
+          .attr('fill', fill)
+          .attr('opacity', opacity);
       }
 
     public drawRects(
@@ -40,10 +42,9 @@ export class DrawingService {
             .attr('y', d => yScale(d.y))
             .attr('width', d => xScale(d.width))
             .attr('height', d => yScale(d.height))
-            .attr('fill', (d,i) => {
-                // return 'red';
-                return cm(d.value).hex()
-            })
+            .attr('fill', (d,i) => cm(d.value).hex())
+            .attr('stroke', (d,i) => 'white')
+            .attr('stroke-width', (d,i) => 3)
     }
     
 }

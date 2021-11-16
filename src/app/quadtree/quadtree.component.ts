@@ -43,13 +43,15 @@ export class QuadtreeComponent implements OnInit {
   ngOnInit(): void {
     // console.log('tome',tome)
     this.setupCanvas();
-    let circleA: Point[] = getRadialVertices({x: 0.5, y: 0.5},0.4,200);
-    let circleB: Point[] = getRadialVertices({x: 0.5, y: 0.5},0.2,200);
+    let circleA: Point[] = getRadialVertices({x: 0.5, y: 0.5},0.4,100);
+    let circleB: Point[] = getRadialVertices({x: 0.5, y: 0.5},0.2,100);
     let points = circleA.concat(circleB);
     let qTree: QuadTree = this.quadTreeService.generateQuadTree(points);
     let rects: Rect[] = this.quadTreeService.getRectsFromQuadTree(qTree);
-    rects = rects.map(rect => ({...rect,value: Math.random()}));
-    const cm = chroma.scale('Oranges');
+    const maxValue = rects.reduce((max,{value}) => value > max ? value: max,0);
+    rects = rects.map(rect => ({...rect,value: rect.value / maxValue}));
+    // rects = rects.map(rect => ({...rect,value: Math.random()}));
+    const cm = chroma.scale('Blues');
     this.drawingService.drawRects(rects,this.svg,this.xScale,this.yScale,cm);
     // this.drawingService.drawPoints(points,this.svg,this.xScale,this.yScale);
   }

@@ -5,6 +5,7 @@ export interface Rect{
     height: number;
     value?: number;
     fill?: number;
+    index?: number;
 }
 
 export interface Dims{

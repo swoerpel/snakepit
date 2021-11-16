@@ -7,6 +7,7 @@ import * as tome from 'chromotome';
 export class ColorService {
     constructor() { }
     
+
     public generatePalettes(): ColorPalette[]{
         const tomePalettes:ColorPalette[] = tome.getAll().map((pal) => {
           return {
@@ -24,8 +25,17 @@ export class ColorService {
     }
 
 
-  public createColorList(palette: string | string[], count: number): string[]{
-    const cm = chroma.scale(palette as any);
+  public createColorList(paletteName: string, count: number): string[]{
+    const palettes = this.generatePalettes()
+    let cm;
+    if(paletteName === 'random'){
+      const {colors,name} = palettes[Math.floor(Math.random() * palettes.length)];
+      console.log('rand palette ->',name)
+      cm = chroma.scale(colors);
+    }else{
+      const {colors} = palettes.find(({name}) => name === paletteName)
+      cm = chroma.scale(colors);
+    }
     const colors = [];
     for(let i = 0; i < count; i++){
       colors.push(cm(i / (count - 1)).hex())

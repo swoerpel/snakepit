@@ -1,14 +1,16 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as chroma from 'chroma.ts';
-import { line, scaleLinear, ScaleLinear, select } from 'd3';
+import { scaleLinear, ScaleLinear, scaleLog, select } from 'd3';
 import { saveSvgAsPng } from 'save-svg-as-png';
 import { uid } from 'uid';
 import { ColorService } from '../services/color.service';
+import { DrawingService } from '../services/drawing.service';
+import { QuadTreeService } from '../services/quad-tree.service';
+import { QuadTree } from '../services/quadtree';
+import { TruchetService } from '../services/truchet.service';
 import { WolframService } from '../services/wolfram.service';
-import { Dims, Rect, Point, ColorPalette } from '../shared/models';
-import { KernelParams } from '../shared/models/wolfram.models';
-import { round, shuffle } from '../state/helpers';
-import { TILE_MAP } from './truchet.constants';
+import { Dims, Point, Rect } from '../shared/models';
+import { assignRandGridValues, findRectsByValue, generateLine, getRadialVertices, shuffle } from '../state/helpers';
 import { WingedTile } from './truchet.models';
 
 
@@ -29,7 +31,6 @@ import { WingedTile } from './truchet.models';
 })
 export class TruchetComponent implements OnInit {
 
-  public tilePermutationsKeys: string[] = Object.keys(TILE_MAP);
 
   public svg: any;
 
@@ -51,13 +52,13 @@ export class TruchetComponent implements OnInit {
     height: 4800,
   }
   public canvasGridDims: Dims = {
-    width: 2,
-    height: 2,
+    width: 1,
+    height: 1,
   }
 
   public cellDims: Dims = {
-    width: 8,
-    height: 8,
+    width: 9,
+    height: 9,
   }
 
   public gridPadding: Dims = {
@@ -65,165 +66,134 @@ export class TruchetComponent implements OnInit {
     height: 0.1,
   }
 
-  public strokeOpacity: number = 1;
-
-  public kernelParams: KernelParams = {
-    states: 5,
-    rule: '',//Math.floor(Math.random() * 50000000),
-    pattern: [
-      [1,0,1],
-      [0,1,0],
-      [1,0,1],
-    ]
-  }
-
   constructor(
     private wolframService: WolframService,
     private colorService: ColorService,
+    private drawingService: DrawingService,
+    private quadTreeService: QuadTreeService,
+    private truchetService: TruchetService,
   ) { }
 
   ngOnInit(): void {
-    // console.log('tome',tome)
     this.setupCanvas();
-    
-    // this.palettes:  this.newMethod(); 
-    const pals: ColorPalette[] = this.colorService.generatePalettes()
-    // const pal = pals.find(p => p.name === "Spectral");
-    const pal = pals[Math.floor(Math.random() * pals.length)];
-    pal.colors = shuffle(pal.colors);
-    
-    const colors: string[] = [
-      pal.colors.pop(),
-      pal.colors.pop(),
-      pal.colors.pop(),
-    ];
-    console.log('pal',pal, colors);
-
-    let eColors = ['black','white'];//[...colors]
-    // let eColors = [...colors]
-    eColors = shuffle(eColors);
-    // console.log('pal',pal)
     const cells: Rect[] = this.generateCanvasCells();
-    // this.colorDark = pal.background;
-    const foregrounds = [
-      ...colors,
-      // ...eColors
-
-      // pal.colors.pop(),
-      // pal.colors.pop(),
-      // pal.colors.pop(),
-      // this.colorDark,
-      // this.colorLight,
-    ]
-    const backgrounds = [
-      // ...colors,
-      // ...eColors,
-      this.colorLight
-    ]
     cells.forEach((cell: Rect, i) => {
-      const randPermIndices: number[] = [
-        // 0,1,2
-        Math.floor(Math.random() * this.tilePermutationsKeys.length),
-        Math.floor(Math.random() * this.tilePermutationsKeys.length),
-        Math.floor(Math.random() * this.tilePermutationsKeys.length),
-        // Math.floor(Math.random() * this.tilePermutationsKeys.length),
-        // Math.floor(Math.random() * this.tilePermutationsKeys.length),
-        // Math.floor(Math.random() * this.tilePermutationsKeys.length),
+      //==============================
+      // WOLFRAM
+      // const kernelParams: KernelParams = {
+      //   states: 5,
+      //   rule: '',//Math.floor(Math.random() * 50000000),
+      //   pattern: [
+      //     [1,0,1],
+      //     [0,1,0],
+      //     [1,0,1],
+      //   ]
+      // }
+      // const grid: Rect[][] = generateDefaultRectGrid(cell,this.cellDims);
+      // this.wolframService.assignTotalisticWolframValues(grid,this.cellDims,kernelParams);  
+      // let tiles: Rect[] = shuffle(grid.reduce((acc, val) => acc.concat(val), []));
+      //==============================
+      // CIRCLES
+      const density = 600;
+      const count = 50;
+      const points: Point[] = [
+        // CIRCLES
+        // ...new Array(count).fill(0).reduce((ary,_,i) => 
+        //   ary.concat(getRadialVertices(
+        //     {x: 0.1 + i * 0.01, y: 0.5 + i * 0.01},
+        //     0 + i * 0.01,
+        //     i * density,
+        //   )
+        // ),[]),
+        ...getRadialVertices(
+          {x: Math.random(), y: Math.random()},
+          0.5,
+          density,
+        ),
+        ...getRadialVertices(
+          {x: Math.random(), y: Math.random()},
+          0.5,
+          density,
+        ),
+        ...getRadialVertices(
+          {x: Math.random(), y: Math.random()},
+          0.5,
+          density,
+        ),
+        // LINES
+        // ...generateLine(
+        //   {x: 1, y: 1},
+        //   {x: 0, y: 0.5},
+        //   density,
+        // ),
+        // ...generateLine(
+        //   randPoint(),
+        //   randPoint(),
+        //   density,
+        // ),
+        ...generateLine(
+          {x: 0, y: 0.6},
+          {x: 1, y: 0.2},
+          density,
+        ),
       ];
-      // const foreground = i % 2 === 0 ? 'black' : 'white';
-      // const background = i % 2 !== 0 ? 'black' : 'white';
-      // const foreground = 'black';
-      // const background = 'white';
-
-      // const rule = 21416;
-      // const rule = 5525;
-      // const rule = 94290;
-      // const rule = 40811354;
-      // const rule = Math.floor(Math.random() * 50000000);
-      // console.log("RULE",rule)
-      // this.kernelParams.rule = rule;
-
-      const grid: Rect[][] = this.createGrid(cell,this.cellDims);
-
-      this.wolframService.assignTotalisticWolframValues(grid,this.cellDims,this.kernelParams);  
-      // this.drawGrid(grid, params.states)
-      let tiles: Rect[] = shuffle(grid.reduce((acc, val) => acc.concat(val), []));
-      
-      this.drawLatticeCell(tiles, randPermIndices,foregrounds,backgrounds);
+      const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
+      let tiles: Rect[] = this.quadTreeService.getRectsFromQuadTree(quadTree);
+      tiles = [
+        // ...filterRectsByValue(tiles, 0, false),
+        // ...filterRectsByValue(tiles, 1, false),
+        ...findRectsByValue(tiles, 2),
+        ...findRectsByValue(tiles, 3),
+        ...findRectsByValue(tiles, 4),
+        ...findRectsByValue(tiles, 5),
+        // ...findRectsByValue(tiles, 6),
+        // ...findRectsByValue(tiles, 7),
+        // ...filterRectsByValue(tiles, 4, false),
+        // ...filterRectsByValue(tiles, 4, false),
+      ]
+      const permutationCount = 6;
+      assignRandGridValues(tiles,permutationCount,true);
+      let wingedTiles: WingedTile[] = this.truchetService.generateWingedTiles(tiles,permutationCount);
+      // wingedTiles = shuffle(wingedTiles);
+      // wingedTiles = wingedTiles.reverse();
+      const colorCount = 20;
+      const colors = this.colorService.createColorList('random',colorCount);
+      const opcScale = scaleLog().domain([0,1]).range([1,0.4]);
+      const colorOffset =  + Math.floor(Math.random() * colorCount);
+      wingedTiles.forEach((wingedTile: WingedTile, i: number) => {
+        const c1 = colors[i % colors.length];
+        const c2 = colors[(i + colorOffset) % colors.length];
+        const opacity = opcScale(i / wingedTiles.length);
+        this.truchetService.drawWingedTile(
+          this.svg,
+          this.xScale,
+          this.yScale,
+          wingedTile,
+          c1,c2,
+          opacity,
+        );
+      })
+      // this.quadTreeService.drawQuadTreeGridLines(
+      //   quadTree,
+      //   this.svg,
+      //   this.xScale,
+      //   this.yScale,
+      //   this.colorLight,
+      //   0.0005,
+      //   0.25,
+      // );
+      // this.drawingService.drawPoints(
+      //   points,
+      //   this.svg,
+      //   this.xScale,
+      //   this.yScale,
+      //   0.001,
+      //   'white',
+      //   1
+      // );
     })
   }
 
-
-
-  public drawLatticeCell(
-    tiles: Rect[],
-    permutations: number[],
-    foregrounds: string[],
-    backgrounds: string[],
-  ){
-    // let indexes = [];
-    const indexes: number[] = tiles.map((_tile: Rect,i: number) => {
-      if(i % 4  === 0){
-      // if(Math.random() > 0.75){
-        return i;
-      }
-      return null;
-      // return i % 3 === 0 ? i : 0;
-      // return Math.floor(Math.random() * tiles.length)
-    }).filter(i => !!i);
-    // console.log('indexes',indexes)
-    // tiles = tiles.concat(this.splitRect(tiles,indexes,permutations));
-    tiles.forEach((tile: Rect, j) => {
-      const key = permutations[tile.value % permutations.length];
-      const foreground = foregrounds[tile.value % foregrounds.length];
-      const background = backgrounds[tile.value % backgrounds.length];
-      const { straights, curves } = TILE_MAP[this.tilePermutationsKeys[key]];
-      const wingedTile = this.generateWingedTile(tile,straights,curves)
-      this.drawWingedTile(wingedTile, foreground,background);
-    });
-  }
-
-
-  public splitRect(rects: Rect[], splitIndexes: number[], permutations: number[] = [0]){
-    const newRects: Rect[] = []
-    const width = rects[0].width / 2;
-    const height = rects[0].height / 2;
-
-    
-      // console.log('value',values)
-    splitIndexes.forEach((rectIndex: number, i: number) => {
-      const rect = rects[rectIndex];
-      // const value = permutations[i % permutations.length];
-      const values: number[] = new Array(4).fill(0).map(() => 
-        permutations[Math.floor(Math.random() * permutations.length)]);
-      console.log('values',values)
-      newRects.push({x: rect.x,y: rect.y,width,height, value: values[0]});
-      newRects.push({x: rect.x + width, y: rect.y, width,height,value: values[1]});
-      newRects.push({x: rect.x + width, y: rect.y + height, width, height,value: values[2]});
-      newRects.push({x: rect.x, y: rect.y + height, width, height,value: values[3]});
-    })
-    return newRects;
-  }
-
-  public createGrid(rect: Rect, dims: Dims){
-    const grid: Rect[][] = [];
-    const xStep = rect.width / dims.width;
-    const yStep = rect.height / dims.height;
-    for(let row = 0; row < dims.height; row++){
-      const rectRow: Rect[] = [];
-      for(let col = 0; col <  dims.width; col++){
-        rectRow.push({
-          x: round(rect.x + col * xStep),
-          y: round(rect.y + row * yStep),
-          width: round(rect.width) / dims.width,
-          height: round(rect.height) / dims.height,
-          value: 0,
-        })
-      }
-      grid.push(rectRow);
-    }
-    return grid;
-  }
 
   public generateCanvasCells(): Rect[] {
     let cells:Rect[] = [];
@@ -244,20 +214,6 @@ export class TruchetComponent implements OnInit {
     return cells;
   }
 
-
-  // generateSumGrid(dims,layers: number = 1): Rect[][]{
-  //   const gridLayers:Rect[][][] = new Array(layers).fill(null)
-  //     .map(() => this.createGrid(null,dims));
-  //   return gridLayers[0].map((row: Rect[],i) => {
-  //     return row.map((rect,j) => {
-  //       const addAmount: number = gridLayers.reduce((sum,layer) => layer[i][j].value + sum, 0);
-  //       rect.value += addAmount;
-  //       return rect;
-  //     })
-  //   });
-  // }
-
-
   drawGrid(grid: Rect[][], states: number){
     const flatGrid: Rect[] = grid.reduce((acc, val) => acc.concat(val), []);
     // console.log('flatGrid',flatGrid)
@@ -272,165 +228,6 @@ export class TruchetComponent implements OnInit {
       .attr('fill', d => cm(d.value / (states - 1)).hex())
   }
 
-  drawWingedTile(tile: WingedTile,foreground: string,background: string){
-    const cornerFill = foreground;
-    const edgeFill = background;
-    const tileGroup = this.svg.append('g');
-    const cornerCircles = tileGroup.selectAll('circle').data(tile.corners);
-    const edgeCircles = tileGroup.selectAll('circle').data(tile.edges);
-
-    const lineGenerator = line();
-
-    tileGroup
-      .append('rect')
-      .attr('x', this.xScale(tile.rect.x))
-      .attr('y', this.yScale(tile.rect.y))
-      .attr('width', this.xScale(tile.rect.width))
-      .attr('height', this.yScale(tile.rect.width))
-      .attr('fill', cornerFill)
-
-    cornerCircles.enter()
-      .append('circle')
-      .attr('cx', d => this.xScale(d.x))
-      .attr('cy', d => this.yScale(d.y))
-      .attr('r', this.xScale(tile.cornerRadius))
-      .attr('fill', cornerFill)
-
-    edgeCircles.enter()
-      .append('circle')
-      .attr('cx', d => this.xScale(d.x))
-      .attr('cy', d => this.yScale(d.y))
-      .attr('r', this.xScale(tile.edgeRadius))
-      .attr('fill', edgeFill);
-
-    tile.straights.forEach((straight: Point[]) => {
-      const line: [number, number][] = straight.map((p: Point) => ([this.xScale(p.x),this.yScale(p.y)]));
-      tileGroup.append('path')
-          .transition()
-          .duration(500)
-          .attr('d',lineGenerator(line))
-          .attr('stroke', edgeFill)
-          .attr('stroke-width', this.xScale(tile.edgeRadius * 2))
-          .attr('stroke-linecap', 'round')
-          .attr('stroke-opacity',this.strokeOpacity)
-          .attr('fill', 'none');
-    });
-
-    tile.curves.forEach((curve: Point[]) => {
-      const curvedLine: [number, number][] = curve.map((p: Point) => ([this.xScale(p.x),this.yScale(p.y)]));
-        tileGroup.append('path')
-          .transition()
-          .duration(500)
-          .attr('d',lineGenerator(curvedLine))
-          .attr('stroke', edgeFill)
-          .attr('stroke-width', this.xScale(tile.edgeRadius * 2))
-          .attr('stroke-linecap', 'round')
-          .attr('stroke-opacity',1)
-          .attr('fill', 'none');
-    });
-  }
-
-  public generateWingedTile(
-    rect: Rect, 
-    drawStraights: number[], 
-    drawCurves: number[], 
-  ): WingedTile{
-    const cornerRadius = rect.width * 1/3;
-    const edgeRadius = rect.width * 1/6;
-    // const cornerRadius = rect.width * 1/3;
-    // const edgeRadius = rect.width * 1/6;
-    const corners: Point[] = [
-      {x: rect.x, y: rect.y},
-      {x: rect.x + rect.width, y: rect.y},
-      {x: rect.x + rect.width, y: rect.y + rect.height},
-      {x: rect.x, y: rect.y + rect.height},
-    ];
-    const edges: Point[] = [
-      {x: rect.x + rect.width / 2, y: rect.y},
-      {x: rect.x + rect.width, y: rect.y + rect.height / 2},
-      {x: rect.x + rect.width / 2, y: rect.y + rect.height},
-      {x: rect.x, y: rect.y + rect.height / 2},
-    ];
-    const straights: Point[][] = drawStraights.map((drawStraight: number, index) => {
-      if(!!drawStraight){
-        let p1: Point;
-        let p2: Point;
-        switch(index){
-          case 0: {
-            p1 = {...edges[3]};
-            p2 = {...edges[1]};
-          };break;
-          case 1: {
-            p1 = {...edges[0]};
-            p2 = {...edges[2]};
-          };break;
-        }
-        return [p1,p2];
-      }
-    }).filter(s => !!s);
-    const curves = drawCurves.map((drawCurve: number, index)=>{
-      if(!!drawCurve){
-        let p1: Point;
-        let p2: Point;
-        switch(index){
-          case 0: {
-            p1 = {...edges[2]};
-            p2 = {...corners[3]};
-          };break;
-          case 1: {
-            p1 = {...edges[0]};
-            p2 = {...corners[1]};
-          };break;
-          case 2: {
-            p1 = {...edges[3]};
-            p2 = {...corners[0]};
-          };break;
-          case 3: {
-            p1 = {...edges[1]};
-            p2 = {...corners[2]};
-          };break;
-        }
-        return this.generateRadialCurve(p1,p2);
-      }
-    }).filter(s => !!s);
-    return {
-      straights,curves,corners,edges,edgeRadius,cornerRadius,rect
-    }
-  }
-
-  public generateRadialCurve(point: Point, origin: Point, rotation = 90): Point[] {    
-    const points = [];
-    const pointCount = 90;
-    const angleStep = rotation / pointCount;
-    for(let i = 0; i <= pointCount; i++){
-      const radians = (Math.PI / 180) * angleStep * i;
-      const cos = Math.cos(radians);
-      const sin = Math.sin(radians);
-      const x = (cos * (point.x - origin.x)) + (sin * (point.y - origin.y)) + origin.x;
-      const y = (cos * (point.y - origin.y)) - (sin * (point.x - origin.x)) + origin.y;
-      points.push({x,y});
-    }
-    return points;
-  }
-
-
-  // public createTiles(dims: Dims, gridPadding: Dims): Rect[]{
-  //   const tiles: Rect[] = [];
-  //   const tileWidth = (1 - 2 * gridPadding.width) / dims.width;
-  //   const tileHeight = (1 - 2 * gridPadding.height) / dims.height;
-  //   for(let col = 0; col <  dims.width; col++){
-  //     for(let row = 0; row <  dims.height; row++){
-  //       tiles.push({
-  //         x: round(gridPadding.width + col * tileWidth),
-  //         y: round(gridPadding.height + row * tileHeight),
-  //         width: round(tileWidth),
-  //         height: round(tileHeight),
-  //       })
-  //     }
-  //   }
-  //   return tiles;
-  // }
-
   public setupCanvas(){
     this.xScale = scaleLinear().domain([0,1]).range([0,this.canvasDims.width]);
     this.yScale = scaleLinear().domain([0,1]).range([0,this.canvasDims.height]);
@@ -441,18 +238,15 @@ export class TruchetComponent implements OnInit {
       .style('background-color',this.backgroundColor);
   }
 
-
-
-  public createCanvasTile(rect: Rect){
-
-    this.xScale = scaleLinear().domain([0,1]).range([0,this.canvasDims.width]);
-    this.yScale = scaleLinear().domain([0,1]).range([0,this.canvasDims.height]);
-    this.svg = select('#canvas')
-      .append("svg")
-      .attr('width', this.canvasDims.width)
-      .attr('height', this.canvasDims.height)
-      .style('background-color','black');
-  }
+  // public setupCanvasTile(): void{
+  //   this.xScale = scaleLinear().domain([0,1]).range([0,this.canvasDims.width]);
+  //   this.yScale = scaleLinear().domain([0,1]).range([0,this.canvasDims.height]);
+  //   this.svg = select('#canvas')
+  //     .append("svg")
+  //     .attr('width', this.canvasDims.width)
+  //     .attr('height', this.canvasDims.height)
+  //     .style('background-color','black');
+  // }
 
   public save(){
     let svg = document.getElementsByTagName("svg")[0];
