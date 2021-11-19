@@ -5,12 +5,13 @@ import { saveSvgAsPng } from 'save-svg-as-png';
 import { uid } from 'uid';
 import { ColorService } from '../services/color.service';
 import { DrawingService } from '../services/drawing.service';
+import { FractalService, TransformParams } from '../services/fractal.service';
 import { QuadTreeService } from '../services/quad-tree.service';
 import { QuadTree } from '../services/quadtree';
 import { TruchetService } from '../services/truchet.service';
 import { WolframService } from '../services/wolfram.service';
 import { Dims, Point, Rect } from '../shared/models';
-import { assignRandGridValues, findRectsByValue, generateLine, getRadialVertices, shuffle } from '../state/helpers';
+import { assignRandGridValues, findRectsByValue, generateLine, generateRandLine, getRadialVertices, shuffle } from '../state/helpers';
 import { WingedTile } from './truchet.models';
 
 
@@ -31,15 +32,10 @@ import { WingedTile } from './truchet.models';
 })
 export class TruchetComponent implements OnInit {
 
-
   public svg: any;
 
   public xScale: ScaleLinear<number, number, never>;
   public yScale: ScaleLinear<number, number, never>;
-  public xCellScale: ScaleLinear<number, number, never>;
-  public yCellScale: ScaleLinear<number, number, never>;
-  public cellWidth: number;
-  public cellHeight: number;
 
   public colorLight = '#fff9df';
   public colorDark = '#222020';
@@ -48,8 +44,8 @@ export class TruchetComponent implements OnInit {
   // public colorDark = 'black';
   // public colorDark = 'white';
   public canvasDims: Dims = {
-    width: 4800,
-    height: 4800,
+    width: 2400,
+    height: 2400,
   }
   public canvasGridDims: Dims = {
     width: 1,
@@ -72,6 +68,7 @@ export class TruchetComponent implements OnInit {
     private drawingService: DrawingService,
     private quadTreeService: QuadTreeService,
     private truchetService: TruchetService,
+    private fractalService: FractalService,
   ) { }
 
   ngOnInit(): void {
@@ -94,8 +91,51 @@ export class TruchetComponent implements OnInit {
       // let tiles: Rect[] = shuffle(grid.reduce((acc, val) => acc.concat(val), []));
       //==============================
       // CIRCLES
-      const density = 600;
+      const density = 10000 ;
       const count = 50;
+
+      const paramGroup: TransformParams[] = [
+        {
+            "a": -0.4804788670631335,
+            "b": 0.5567376209412149,
+            "c": -0.7198754179309135,
+            "d": -0.8028900772720047,
+            "e": 0.6406432584927539,
+            "f": 0.8136326724044154,
+            "p": 0.5
+        },
+        {
+            "a": -0.585253702331406,
+            "b": 0.8827996515903429,
+            "c": 0.08873892754731316,
+            "d": -0.3572470977842004,
+            "e": -0.5713008337698524,
+            "f": -0.620321204843024,
+            "p": 0.5
+        }
+    ]
+
+    // const paramGroup: TransformParams[] = [
+    //   {
+    //       "a": 0.08973650862065918,
+    //       "b": 0.6081066720495298,
+    //       "c": -0.04540111549208614,
+    //       "d": 0.8700223881677276,
+    //       "e": -0.32525229979545967,
+    //       "f": -0.4513086464766145,
+    //       "p": 0.5
+    //   },
+    //   {
+    //       "a": 0.7061115272560872,
+    //       "b": -0.3384537074644909,
+    //       "c": 0.6477535747400558,
+    //       "d": 0.7540176568680501,
+    //       "e": 0.43078949039008463,
+    //       "f": 0.18712277280428413,
+    //       "p": 0.5
+    //   }
+    // ];
+
       const points: Point[] = [
         // CIRCLES
         // ...new Array(count).fill(0).reduce((ary,_,i) => 
@@ -105,22 +145,29 @@ export class TruchetComponent implements OnInit {
         //     i * density,
         //   )
         // ),[]),
-        ...getRadialVertices(
-          {x: Math.random(), y: Math.random()},
-          0.5,
-          density,
-        ),
-        ...getRadialVertices(
-          {x: Math.random(), y: Math.random()},
-          0.5,
-          density,
-        ),
-        ...getRadialVertices(
-          {x: Math.random(), y: Math.random()},
-          0.5,
-          density,
-        ),
+        // ...getRadialVertices(
+        //   {x: Math.random(), y: Math.random()},
+        //   0.5,
+        //   density,
+        // ),
+        // ...getRadialVertices(
+        //   {x: Math.random(), y: Math.random()},
+        //   0.5,
+        //   density,
+        // ),
+        // ...getRadialVertices(
+        //   {x: Math.random(), y: Math.random()},
+        //   0.5,
+        //   density,
+        // ),
         // LINES
+        // ...new Array(count).fill(0).reduce((ary,_,i) => 
+        //   ary.concat( generateRandLine(
+        //     {x: 0, y: 0},
+        //     {x: 1, y: 1},
+        //     density,
+        //   ),
+        // ),[]),
         // ...generateLine(
         //   {x: 1, y: 1},
         //   {x: 0, y: 0.5},
@@ -131,19 +178,18 @@ export class TruchetComponent implements OnInit {
         //   randPoint(),
         //   density,
         // ),
-        ...generateLine(
-          {x: 0, y: 0.6},
-          {x: 1, y: 0.2},
-          density,
-        ),
+        // ...this.fractalService.generateIFSFractal(null,density)
+        ...this.fractalService.generateIFSFractal(paramGroup,density)
       ];
+      console.log(points.length)
+
       const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
       let tiles: Rect[] = this.quadTreeService.getRectsFromQuadTree(quadTree);
       tiles = [
         // ...filterRectsByValue(tiles, 0, false),
         // ...filterRectsByValue(tiles, 1, false),
-        ...findRectsByValue(tiles, 2),
-        ...findRectsByValue(tiles, 3),
+        // ...findRectsByValue(tiles, 2),
+        // ...findRectsByValue(tiles, 3),
         ...findRectsByValue(tiles, 4),
         ...findRectsByValue(tiles, 5),
         // ...findRectsByValue(tiles, 6),
@@ -156,10 +202,11 @@ export class TruchetComponent implements OnInit {
       let wingedTiles: WingedTile[] = this.truchetService.generateWingedTiles(tiles,permutationCount);
       // wingedTiles = shuffle(wingedTiles);
       // wingedTiles = wingedTiles.reverse();
-      const colorCount = 20;
+      const colorCount = 4;
       const colors = this.colorService.createColorList('random',colorCount);
-      const opcScale = scaleLog().domain([0,1]).range([1,0.4]);
-      const colorOffset =  + Math.floor(Math.random() * colorCount);
+      // const colors = [this.colorLight,this.colorDark]
+      const opcScale = scaleLog().domain([0,1]).range([1,1]);
+      const colorOffset = 1// + Math.floor(Math.random() * colorCount);
       wingedTiles.forEach((wingedTile: WingedTile, i: number) => {
         const c1 = colors[i % colors.length];
         const c2 = colors[(i + colorOffset) % colors.length];
@@ -173,22 +220,22 @@ export class TruchetComponent implements OnInit {
           opacity,
         );
       })
-      // this.quadTreeService.drawQuadTreeGridLines(
-      //   quadTree,
-      //   this.svg,
-      //   this.xScale,
-      //   this.yScale,
-      //   this.colorLight,
-      //   0.0005,
-      //   0.25,
-      // );
+      this.quadTreeService.drawQuadTreeGridLines(
+        quadTree,
+        this.svg,
+        this.xScale,
+        this.yScale,
+        this.colorLight,
+        0.0005,
+        0.25,
+      );
       // this.drawingService.drawPoints(
       //   points,
       //   this.svg,
       //   this.xScale,
       //   this.yScale,
       //   0.001,
-      //   'white',
+      //   this.colorLight,
       //   1
       // );
     })

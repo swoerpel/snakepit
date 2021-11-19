@@ -18,6 +18,11 @@ export interface Range{
     high: number;
 }
 
+export interface Extrema{
+    min: number;
+    max: number;
+}
+
 export interface Point{
     x: number;
     y: number;

@@ -1,6 +1,9 @@
-import { Dims, Point, Rect } from "../shared/models";
+import { Dims, Extrema, Point, Range, Rect } from "../shared/models";
 
 
+export function flatten<T>(grid: T[][]):T[]{
+  return grid.reduce((acc, val) => acc.concat(val), []);
+}
 
 export var round = (N,acc = 100000) => {
   return Math.round(N * acc) / acc
@@ -14,6 +17,30 @@ export var randPoint = (scaler = 1): Point => ({
   x: Math.random() * scaler,
   y: Math.random() * scaler,
 })
+
+export var getExtremaFromPoints = (points: Point[]): Extrema[] => {
+  return [
+    points.reduce((extrema: Extrema, {x}: Point) => {
+      if(x > extrema.max){
+        return {...extrema, max: x};
+      }
+      if(x < extrema.min){
+        return {...extrema, min: x};
+      }
+      return extrema;
+    },{min: points[0].x, max: points[0].x}),
+
+    points.reduce((extrema: Extrema, {y}: Point) => {
+      if(y > extrema.max){
+        return {...extrema, max: y};
+      }
+      if(y < extrema.min){
+        return {...extrema, min: y};
+      }
+      return extrema;
+    },{min: points[0].y, max: points[0].y})
+  ];
+}
 
 
 
@@ -155,9 +182,6 @@ export const splitRectsByIndex = (
 }
 
 
-export function flatten<T>(grid: T[][]):T[]{
-  return grid.reduce((acc, val) => acc.concat(val), []);
-}
 
 export function getSpiral(
   origin: Point,
@@ -213,7 +237,7 @@ export function generateRadialCurve(point: Point, origin: Point, rotation = 90):
   return points;
 }
 
-export function generateLine(p1: Point,p2: Point,segments = 4): Point[] {
+export function generateLine(p1: Point,p2: Point,segments = 10): Point[] {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
   const xStep = dx / segments;
@@ -225,4 +249,20 @@ export function generateLine(p1: Point,p2: Point,segments = 4): Point[] {
     points.push({x,y});
   } 
   return points;
+}
+
+export function generateRandLine(
+  min: Point = {x: 0, y: 0},
+  max: Point = {x: 1, y: 1},
+  segments = 10
+): Point[] {
+  const p1 = {
+    x: min.x + (max.x * Math.random()),
+    y: min.y + (max.y * Math.random()),
+  };
+  const p2 = {
+    x: min.x + (max.x * Math.random()),
+    y: min.y + (max.y * Math.random()),
+  };
+  return generateLine(p1,p2,segments);
 }

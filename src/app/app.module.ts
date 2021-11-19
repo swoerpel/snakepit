@@ -24,6 +24,7 @@ import { AntFieldV2Component } from './ant-field-v2/ant-field-v2.component';
 import { ClockComponent } from './clock/clock.component';
 import { TruchetComponent } from './truchet/truchet.component';
 import { QuiltComponent } from './quilt/quilt.component';
+import { FractalComponent } from './fractal/fractal.component';
 
 
 const stateSlices = {
@@ -47,7 +48,8 @@ const stateEffects = [
     AntFieldV2Component,
     ClockComponent,
     TruchetComponent,
-    QuiltComponent
+    QuiltComponent,
+    FractalComponent
   ],
   imports: [
     BrowserModule,

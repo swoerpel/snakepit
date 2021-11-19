@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AntFieldV2Component } from './ant-field-v2/ant-field-v2.component';
 import { AntFieldComponent } from './ant-field/ant-field.component';
 import { ClockComponent } from './clock/clock.component';
+import { FractalComponent } from './fractal/fractal.component';
 import { GridAlgorithmComponent } from './grid-algorithm/grid-algorithm.component';
 import { ImageFilterComponent } from './image-filter/image-filter.component';
 import { KnightsTourComponent } from './knights-tour/knights-tour.component';
@@ -67,6 +68,10 @@ const routes: Routes = [
   {
     path: 'quadtree',
     component: QuadtreeComponent,
+  },
+  {
+    path: 'fractal',
+    component: FractalComponent,
   },
 ];
 
