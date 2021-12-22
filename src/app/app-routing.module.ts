@@ -6,6 +6,7 @@ import { ClockComponent } from './clock/clock.component';
 import { FractalComponent } from './fractal/fractal.component';
 import { GridAlgorithmComponent } from './grid-algorithm/grid-algorithm.component';
 import { ImageFilterComponent } from './image-filter/image-filter.component';
+import { IsometricComponent } from './isometric/isometric.component';
 import { KnightsTourComponent } from './knights-tour/knights-tour.component';
 import { QuadtreeComponent } from './quadtree/quadtree.component';
 import { QuiltComponent } from './quilt/quilt.component';
@@ -72,6 +73,10 @@ const routes: Routes = [
   {
     path: 'fractal',
     component: FractalComponent,
+  },
+  {
+    path: 'isometric',
+    component: IsometricComponent,
   },
 ];
 

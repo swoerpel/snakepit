@@ -22,48 +22,15 @@ export class FractalService {
     paramGroup: TransformParams[] = null,
     iterations = 10000
   ): Point[]{
-    // const f1: TransformParams = {
-    //   a: 0,
-    //   b: 0,
-    //   c: 0,
-    //   d: 0.16,
-    //   e: 0,
-    //   f: 0,
-    //   p: 0.01,
-    // }
-    // const f2: TransformParams = {
-    //   a: 0.85,
-    //   b: 0.04,
-    //   c: -0.04,
-    //   d: 0.85,
-    //   e: 0,
-    //   f: 1.6,
-    //   p: 0.85,
-    // }
-    // const f3: TransformParams = {
-    //   a: 0.2,
-    //   b: -0.26,
-    //   c: 0.23,
-    //   d: 0.22,
-    //   e: 0,
-    //   f: 1.6,
-    //   p: 0.07,
-    // }
-    // const f4: TransformParams = {
-    //   a: -0.15,
-    //   b: 0.28,
-    //   c: 0.26,
-    //   d: 0.24,
-    //   e: 0,
-    //   f: 0.44,
-    //   p: 0.07,
-    // }
+
+    paramGroup = this.getFern();
+
     if(!paramGroup){
       paramGroup = [
         this.generateRandFunction(0.5),
         this.generateRandFunction(0.5),
       ];
-      console.log(paramGroup)
+      // console.log(paramGroup)
     }
     
     
@@ -104,6 +71,46 @@ export class FractalService {
       f: Math.random() * (Math.random() > 0.5 ? 1 : -1),
       p,
     }
+  }
+
+  private getFern(): TransformParams[]{
+    const f1: TransformParams = {
+      a: 0,
+      b: 0,
+      c: 0,
+      d: 0.16,
+      e: 0,
+      f: 0,
+      p: 0.01,
+    }
+    const f2: TransformParams = {
+      a: 0.85,
+      b: 0.04,
+      c: -0.04,
+      d: 0.85,
+      e: 0,
+      f: 1.6,
+      p: 0.85,
+    }
+    const f3: TransformParams = {
+      a: 0.2,
+      b: -0.26,
+      c: 0.23,
+      d: 0.22,
+      e: 0,
+      f: 1.6,
+      p: 0.07,
+    }
+    const f4: TransformParams = {
+      a: -0.15,
+      b: 0.28,
+      c: 0.26,
+      d: 0.24,
+      e: 0,
+      f: 0.44,
+      p: 0.07,
+    }
+    return [f1,f2,f3,f4];
   }
 
 }

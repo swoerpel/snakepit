@@ -12,7 +12,7 @@ export class DrawingService {
         yScale,
         radius = 0.002,
         fill = 'white',
-        opacity = 1
+        opacity: number | Function = 1 
       ): void{
         const gridGroup = svg.append('g')
           .selectAll('circle')
@@ -23,7 +23,8 @@ export class DrawingService {
           .attr('cy', d => yScale(d.y))
           .attr('r', xScale(radius))
           .attr('fill', fill)
-          .attr('opacity', opacity);
+          .attr('opacity', (_,i) => 
+          (typeof opacity === 'number') ?  opacity : opacity(i))
       }
 
     public drawRects(

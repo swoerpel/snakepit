@@ -5,9 +5,13 @@ export function flatten<T>(grid: T[][]):T[]{
   return grid.reduce((acc, val) => acc.concat(val), []);
 }
 
-export var round = (N,acc = 100000) => {
-  return Math.round(N * acc) / acc
+export var round = (N,decimals = 6) => {
+  return parseFloat(N.toFixed(decimals));  
 }
+
+export var removeDuplicates = <T>(arr: T[],key: string = 'id'): T[] => 
+  arr.filter((v,i,a) => a.findIndex(t=> (t[key] === v[key])) === i)
+
 
 export var randHex = (): string => {
   return '#' + (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
@@ -43,6 +47,12 @@ export var getExtremaFromPoints = (points: Point[]): Extrema[] => {
 }
 
 
+export function roundPoints(points: Point[], decimals: number = 6): Point[]{
+  return points.map((p) => ({
+    x: round(p.x,decimals),
+    y: round(p.y,decimals),
+  }))
+}
 
 
 export function arrayRotate<T>(arr: T[], count: number): T[] {
@@ -158,6 +168,13 @@ export function findRectsByValue(rects: Rect[],value: number,invert = false): Re
 }
 
 
+export function pickWeightRandom<T>(values: T[], weights: number[] = [1]): T {
+  const weightedValues = weights.reduce((d,w,i) => 
+    d.concat(new Array(w).fill(values[i])),[]);
+  return weightedValues[Math.floor(Math.random() * weightedValues.length)];
+}
+
+
 export const splitRectsByIndex = (
   rects: Rect[], 
   splitIndexes: number[], 
@@ -200,6 +217,25 @@ export function getSpiral(
     let x = origin.x + Math.cos(a) * r;
     let y = origin.y + Math.sin(a) * r;
     points.push({x,y});
+  }
+  return points;
+}
+
+export function getHorizontalSinWave(
+  y: number = 0.5,
+  width: number = 1,
+  amplitude: number = 0.25,
+  frequency: number = 1, 
+  density: number = 200
+): Point[] {
+  let step = 1 / density * width;
+  let points: Point[] = []
+  for(let i = 0; i < density; i ++){
+    let x = i * step  + (1 - width) / 2;
+    points.push({
+      x: x,
+      y: y + amplitude * Math.sin(x * frequency * 2 * Math.PI)
+    })
   }
   return points;
 }
@@ -249,6 +285,7 @@ export function generateLine(p1: Point,p2: Point,segments = 10): Point[] {
     points.push({x,y});
   } 
   return points;
+
 }
 
 export function generateRandLine(

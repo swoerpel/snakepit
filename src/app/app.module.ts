@@ -25,6 +25,7 @@ import { ClockComponent } from './clock/clock.component';
 import { TruchetComponent } from './truchet/truchet.component';
 import { QuiltComponent } from './quilt/quilt.component';
 import { FractalComponent } from './fractal/fractal.component';
+import { IsometricComponent } from './isometric/isometric.component';
 
 
 const stateSlices = {
@@ -49,7 +50,8 @@ const stateEffects = [
     ClockComponent,
     TruchetComponent,
     QuiltComponent,
-    FractalComponent
+    FractalComponent,
+    IsometricComponent
   ],
   imports: [
     BrowserModule,

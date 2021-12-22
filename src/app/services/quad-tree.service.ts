@@ -74,32 +74,38 @@ export class QuadTreeService {
 
   public drawQuadTreeGridLines(
     qtree: QuadTree,
+    index: number = 0,
     svg: any,
     xScale,
     yScale,
-    stroke = 'black',
+    stroke: string | string[] = 'black',
+    fill: string | string[] = 'white',
     strokeWidth = 0.001,
     opacity = 1,
+    defaultStrokeMode = true,
   ){
-    // const cv = 1 / this.quadTreesDrawn;
-    // const fill = this.cm(cv).hex();
+    index++;
     const x = qtree.boundary.x - qtree.boundary.w;
     const y = qtree.boundary.y - qtree.boundary.h;
+    const width = qtree.boundary.w * 2;
+    const height = qtree.boundary.h * 2;
     svg.append('rect')
         .attr('x', xScale(x))
         .attr('y', yScale(y))
-        .attr('width', xScale(qtree.boundary.w * 2))
-        .attr('height', yScale(qtree.boundary.h * 2))
-        .attr('fill', 'none')
-        .attr('stroke',stroke)
-        .attr('stroke-width',xScale(strokeWidth))
+        .attr('width', xScale(width))
+        .attr('height', yScale(height))
+        .attr('stroke', 'none')
+        .attr('stroke',(stroke !== Object(stroke)) ? stroke : stroke[index % stroke.length] )
+        .attr('fill',(fill !== Object(fill)) ? fill : fill[index % fill.length] )
+        .attr('stroke-width',defaultStrokeMode ? xScale(strokeWidth) : xScale(strokeWidth * width / 2))
         .attr('stroke-opacity',opacity)
+        // .attr('stroke-dasharray','8')
 
     if (qtree.divided) {
-      this.drawQuadTreeGridLines(qtree.northeast,svg,xScale,yScale,stroke,strokeWidth,opacity);
-      this.drawQuadTreeGridLines(qtree.northwest,svg,xScale,yScale,stroke,strokeWidth,opacity);
-      this.drawQuadTreeGridLines(qtree.southeast,svg,xScale,yScale,stroke,strokeWidth,opacity);
-      this.drawQuadTreeGridLines(qtree.southwest,svg,xScale,yScale,stroke,strokeWidth,opacity);
+      this.drawQuadTreeGridLines(qtree.northeast,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.northwest,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.southeast,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.southwest,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
     }
   }
 
