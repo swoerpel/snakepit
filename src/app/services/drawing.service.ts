@@ -27,6 +27,28 @@ export class DrawingService {
           (typeof opacity === 'number') ?  opacity : opacity(i))
       }
 
+    public drawLine(
+        start: Point,
+        end: Point,
+        svg: any,
+        xScale,
+        yScale,
+        strokeWidth = 0.001,
+        stroke = 'white',
+        opacity: number | Function = 1 
+      ): void{
+        svg.append("line")
+          .attr("x1", xScale(start.x))
+          .attr("y1", yScale(start.y))
+          .attr("x2", xScale(end.x))  
+          .attr("y2", yScale(end.y))
+          .attr("stroke-linecap", 'round')
+          .attr("stroke-width", xScale(strokeWidth))
+          .attr('stroke', stroke)
+          .attr('opacity', (_,i) => 
+          (typeof opacity === 'number') ?  opacity : opacity(i));
+      }
+
     public drawRects(
         rects: Rect[],
         svg: any,

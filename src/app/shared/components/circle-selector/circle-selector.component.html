@@ -1,0 +1,45 @@
+
+
+<div class="section">
+    <div class="column">
+        <div class="title">Origin</div>
+        <app-point-selector
+            (pointSelected)="originSelected($event)"
+            [padding]="padding"
+        ></app-point-selector>
+        <app-input>
+            <div class="title">{{origin?.x}}, {{origin?.y}}</div>
+        </app-input>
+    </div>
+</div>
+
+<div class="section">
+    <div class="column">
+        <app-range-toggle
+            (update)="radiusSelected($event)"
+            [label]="'Radius:'"
+            [range]="radii"
+            [multiToggle]="false"
+            [showSummary]="false"
+        ></app-range-toggle>
+    </div>
+</div>
+
+<div class="section">
+    <div class="column">
+        <app-range-toggle
+            (update)="verticesSelected($event)"
+            [label]="'Vertices:'"
+            [range]="verticeOptions"
+            [multiToggle]="false"
+            [showSummary]="false"
+        ></app-range-toggle>
+    </div>
+</div>
+
+<div class="section">
+    <div (click)="createCircle()"
+        class="action card button">
+        Create Circle
+    </div>
+</div>

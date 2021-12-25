@@ -1,0 +1,28 @@
+
+$gap: 1rem;
+
+.container{
+    width: 100%;
+    display: flex; 
+    flex-direction: column;
+
+    .row{
+        display: flex; 
+        justify-content: center;
+        &:not(:last-child){
+            margin-bottom: $gap;
+        }
+        .cell{
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            &:not(:last-child){
+                margin-right: $gap;
+            }
+        }
+    }
+
+}

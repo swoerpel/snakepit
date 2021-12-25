@@ -1,0 +1,30 @@
+
+<div [formGroup]="formGroup" class="section">
+    <div class="column">
+        <div class="title">Start</div>
+        <app-point-selector
+            (pointSelected)="startSelected($event)"
+            [padding]="padding"
+        ></app-point-selector>
+        <app-input>
+            <input formControlName="start">
+        </app-input>
+    </div>
+    <div class="column">
+        <div class="title">End</div>
+        <app-point-selector
+            (pointSelected)="endSelected($event)"
+            [padding]="padding"
+        ></app-point-selector>
+        <app-input>
+            <input formControlName="end">
+        </app-input>
+    </div>
+</div>
+
+<div class="section">
+    <div (click)="createLine()"
+        class="action card button">
+        Create Line
+    </div>
+</div>

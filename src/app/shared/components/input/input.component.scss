@@ -1,0 +1,92 @@
+:host{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.input-row{
+    display: flex;
+    width: 100%;
+}
+
+.label{
+    font-size: var(--size-4);
+    color: var(--color-accent);
+}
+
+:host ::ng-deep {
+
+    .text{
+        font-size: var(--size-3);
+    }
+
+    input, textarea{
+        width: 100%;
+        font-size: var(--size-3);
+        border: var(--color-primary-3) 1px solid;
+        border-radius: var(--border-radius-s);
+        padding: 0.4rem;
+        font-family: 'zen';
+        font-weight: 700;
+        text-align: center;
+        font-weight: 300;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+    -moz-appearance: textfield;
+    }
+    select::-ms-expand {
+        display: none;
+    }
+
+    select {
+        padding: 0.4rem;
+        font-family: 'zen';
+        font-size: var(--size-3);
+        font-weight: 600;
+        width: 100%;
+        display: inline-block;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -ms-appearance: none;
+        appearance: none;
+        border-radius: var(--border-radius-s);
+    }
+
+    option{
+        font-size: var(--size-5);
+        font-weight: 600;
+    }
+
+    // for when you want an input and button 
+    // next to each other
+    .group{
+        display: flex;
+        *{
+            margin-right: 1rem;
+        }
+        input{
+            width: 100%;
+        }
+        .subtitle{
+            width: 8rem;
+        }
+    }
+
+    .multi-row{
+        display: flex;
+        flex-direction: column;
+    }
+
+    
+}
+

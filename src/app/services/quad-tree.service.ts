@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
+import { analyze } from 'chroma.ts';
 import { Point, Rect } from '../shared/models';
+import { DrawOptions } from '../shared/models/draw-options.model';
+import { StyleOptions } from '../shared/models/style-options.model';
 import { randHex } from '../state/helpers';
 import { QuadTree, Rectangle } from './quadtree';
 
@@ -74,10 +77,10 @@ export class QuadTreeService {
 
   public drawQuadTreeGridLines(
     qtree: QuadTree,
-    index: number = 0,
     svg: any,
     xScale,
     yScale,
+    index: number = 0,
     stroke: string | string[] = 'black',
     fill: string | string[] = 'white',
     strokeWidth = 0.001,
@@ -102,10 +105,43 @@ export class QuadTreeService {
         // .attr('stroke-dasharray','8')
 
     if (qtree.divided) {
-      this.drawQuadTreeGridLines(qtree.northeast,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
-      this.drawQuadTreeGridLines(qtree.northwest,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
-      this.drawQuadTreeGridLines(qtree.southeast,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
-      this.drawQuadTreeGridLines(qtree.southwest,index,svg,xScale,yScale,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.northeast,svg,xScale,yScale,index,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.northwest,svg,xScale,yScale,index,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.southeast,svg,xScale,yScale,index,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+      this.drawQuadTreeGridLines(qtree.southwest,svg,xScale,yScale,index,stroke,fill,strokeWidth,opacity,defaultStrokeMode);
+    }
+  }
+
+  public drawQuadTreeGridRects(
+    qtree: QuadTree,
+    drawOptions: DrawOptions,
+    styleOptions: StyleOptions,
+    index: number = 0,
+  ){
+    index++;
+    const x = qtree.boundary.x - qtree.boundary.w;
+    const y = qtree.boundary.y - qtree.boundary.h;
+    const width = qtree.boundary.w * 2;
+    const height = qtree.boundary.h * 2;
+    
+    drawOptions.svg.append('rect')
+        .attr('x', drawOptions.xScale(x))
+        .attr('y', drawOptions.yScale(y))
+        .attr('width', drawOptions.xScale(width))
+        .attr('height', drawOptions.yScale(height))
+        .attr('stroke', 'none')
+        .attr('stroke',(styleOptions.stroke !== Object(styleOptions.stroke)) ? 
+          styleOptions.stroke : styleOptions.stroke[index % styleOptions.stroke.length])
+        .attr('fill',(styleOptions.fill !== Object(styleOptions.fill)) ? 
+          styleOptions.fill : styleOptions.fill[index % styleOptions.fill.length])
+        .attr('stroke-width',drawOptions.xScale(styleOptions.strokeWidth))
+        .attr('stroke-opacity',styleOptions.opacity)
+
+    if (qtree.divided) {
+      this.drawQuadTreeGridRects(qtree.northeast,drawOptions,styleOptions,index);
+      this.drawQuadTreeGridRects(qtree.northwest,drawOptions,styleOptions,index);
+      this.drawQuadTreeGridRects(qtree.southeast,drawOptions,styleOptions,index);
+      this.drawQuadTreeGridRects(qtree.southwest,drawOptions,styleOptions,index);
     }
   }
 

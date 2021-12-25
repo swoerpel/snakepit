@@ -11,7 +11,10 @@ import { QuadTreeService } from '../services/quad-tree.service';
 import { QuadTree } from '../services/quadtree';
 import { TruchetService } from '../services/truchet.service';
 import { WolframService } from '../services/wolfram.service';
+import { RangeToggleOutput } from '../shared/components/range-toggle/range-toggle.component';
 import { Dims, Point, Rect } from '../shared/models';
+import { DrawOptions } from '../shared/models/draw-options.model';
+import { StyleOptions } from '../shared/models/style-options.model';
 import { arrayRotate, assignRandGridValues, findRectsByValue, generateLine, getRadialVertices, pickWeightRandom, removeDuplicates, roundPoints, shuffle } from '../state/helpers';
 import { WingedTile } from './truchet.models';
 
@@ -45,8 +48,8 @@ export class TruchetComponent implements OnInit {
   // public colorDark = 'black';
   // public colorDark = 'white';
   public canvasDims: Dims = {
-    width: 2400,
-    height: 2400,
+    width: 600,
+    height: 600,
   }
   public canvasGridDims: Dims = {
     width: 1,
@@ -63,6 +66,15 @@ export class TruchetComponent implements OnInit {
     height: 0.1,
   }
 
+  public padding: Point = {
+    x: 0.25,
+    y: 0.25,
+  }
+
+  public points: Point[] = [];
+
+  public rangeValues = [1,2,3,4,6];
+
   constructor(
     private wolframService: WolframService,
     private colorService: ColorService,
@@ -72,6 +84,61 @@ export class TruchetComponent implements OnInit {
     private fractalService: FractalService,
     private pointService: PointService,
   ) { }
+
+
+  public pointSelected(point: Point){
+    const points = getRadialVertices(point,0.2,100)
+    // this.points = this.points.concat(points);
+    const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
+    
+    this.quadTreeService.drawQuadTreeGridLines(
+      quadTree,
+      this.svg,
+      this.xScale,
+      this.yScale,
+    );
+    this.svg.innerHTML = '';
+    // this.drawingService.drawPoints(
+    //   this.points,
+    //   this.svg,
+    //   this.xScale,
+    //   this.yScale,
+    // );    
+  }
+
+  public lineSelected([start,end]: Point[]){
+    // this.points = this.points.concat(points);
+    // const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
+    console.log('[start,end',start,end)
+    this.drawingService.drawLine(
+      start,
+      end,
+      this.svg,
+      this.xScale,
+      this.yScale,
+      0.05
+    );    
+  }
+
+
+  public circleSelected(points: Point[]){
+    console.log('points',points)
+    // const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
+    // this.quadTreeService.drawQuadTreeGridLines(
+    //   quadTree,
+    //   this.svg,
+    //   this.xScale,
+    //   this.yScale,
+    // );
+    this.svg.innerHTML = '';
+    this.drawingService.drawPoints(
+      points,
+      this.svg,
+      this.xScale,
+      this.yScale,
+      0.025
+    );
+  }
 
   ngOnInit(): void {
     this.setupCanvas();
@@ -142,7 +209,7 @@ export class TruchetComponent implements OnInit {
         //=======================
         // ...this.pointService.horizontalSinWaveGroup(),
         // ...this.pointService.flower(),
-        ...this.pointService.flower(),
+        // ...this.pointService.flower(),
         //=======================
         // ...this.pointService.ellipticCurve(),
         //=======================
@@ -202,17 +269,14 @@ export class TruchetComponent implements OnInit {
 
       const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
       // this.drawWingedTileGroup(quadTree);
-      this.drawQuadTree(quadTree);
+      // this.drawQuadTree(quadTree);
       // this.drawPointGroup(points);
     })
   }
 
   // DRAW POINTS
   public drawPointGroup(points: Point[]): void{
-
-
     const colors = this.colorService.createColorList('Oranges',3);
-
     const rMax = 0.005;
     const rStep = rMax * .6;
     const groupCount = 1;
@@ -241,7 +305,7 @@ export class TruchetComponent implements OnInit {
         // colors[i % colors.length],
         // i % 2 === 0 ? this.colorLight : this.colorDark,
         this.colorLight,
-        opacityOss,
+        1,//opacityOss,
       );  
     }
   }
@@ -291,19 +355,35 @@ export class TruchetComponent implements OnInit {
     const colors = this.colorService.createColorList('random',colorCount);
     const strokes = arrayRotate([...colors],Math.floor(colorCount * 0) || 1)
     console.log(colors)
-    this.quadTreeService.drawQuadTreeGridLines(
+    const drawOptions: DrawOptions = {
+      svg: this.svg,
+      xScale: this.xScale,
+      yScale: this.yScale,
+    }
+    const styleOptions: StyleOptions = {
+      stroke: strokes,
+      fill: colors,
+      strokeWidth: sw,
+      opacity: 1,
+    }
+    this.quadTreeService.drawQuadTreeGridRects(
       quadTree,
-      0,
-      this.svg,
-      this.xScale,
-      this.yScale,
-      // this.colorLight,
-      colors,
-      strokes,
-      sw,
-      1,
-      false
+      drawOptions,
+      styleOptions
     );
+    // this.quadTreeService.drawQuadTreeGridLines(
+    //   quadTree,
+    //   0,
+    //   this.svg,
+    //   this.xScale,
+    //   this.yScale,
+    //   // this.colorLight,
+    //   colors,
+    //   strokes,
+    //   sw,
+    //   1,
+    //   false
+    // );
   }
 
   public generateCanvasCells(): Rect[] {

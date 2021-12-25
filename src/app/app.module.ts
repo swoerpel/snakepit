@@ -26,6 +26,11 @@ import { TruchetComponent } from './truchet/truchet.component';
 import { QuiltComponent } from './quilt/quilt.component';
 import { FractalComponent } from './fractal/fractal.component';
 import { IsometricComponent } from './isometric/isometric.component';
+import { PointSelectorModule } from './shared/components/point-selector/point-selector.module';
+import { LineSelectorModule } from './shared/components/line-selector/line-selector.module';
+import { InputModule } from './shared/components/input/input.module';
+import { RangeToggleModule } from './shared/components/range-toggle/range-toggle.module';
+import { CircleSelectorModule } from './shared/components/circle-selector/circle-selector.module';
 
 
 const stateSlices = {
@@ -57,7 +62,11 @@ const stateEffects = [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    
+    PointSelectorModule,
+    LineSelectorModule,
+    InputModule,
+    RangeToggleModule,
+    CircleSelectorModule,
     StoreRouterConnectingModule.forRoot(),
     StoreModule.forRoot(stateSlices),
     EffectsModule.forRoot(stateEffects),

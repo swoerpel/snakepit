@@ -1,0 +1,23 @@
+
+<div class="container card">
+    <!-- <div *ngIf="!!label" class="row label">{{label}}</div> -->
+    <div class="row list">
+        <app-input [label]="label">
+            <div *ngFor="let value of range"
+                (click)="valueSelected(value)"
+                [ngClass]="toggleValueDict[value.toString()] ? 'selected' : ''"
+                class="item card button">
+                {{value}}
+            </div>
+        </app-input>
+        
+    </div>
+    <div *ngIf="showSummary" class="row summary">
+        <app-input label="Sum">
+            <div class="text">{{sum}}</div>
+        </app-input>
+        <app-input label="Avg">
+            <div class="text">{{avg}}</div>
+        </app-input>
+    </div>
+</div>

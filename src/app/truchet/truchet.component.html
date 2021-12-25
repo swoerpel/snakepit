@@ -1,4 +1,8 @@
-<div class="content card">
+<!-- <div class="column card left">
+ stuff
+</div> -->
+
+<div class="content column card">
     <div class="preview card">
         <div id="canvas">
         </div>
@@ -6,5 +10,32 @@
 
 </div>
 
-<button (click)="save()" class="save">Save</button>
+<div class="column card right">
+    <!-- <app-point-selector
+        (pointSelected)="pointSelected($event)"
+        [padding]="padding"
+    ></app-point-selector> -->
+    <!-- <app-line-selector
+        (lineSelected)="lineSelected($event)"
+    >
+    </app-line-selector> -->
+
+    <!-- <app-range-toggle
+        (update)="rangeUpdated($event)"
+        [label]="'Values:'"
+        [range]="rangeValues"
+        [multiToggle]="true"
+        [showSummary]="true"
+    ></app-range-toggle> -->
+
+    <app-circle-selector
+    (circleSelected)="circleSelected($event)"
+    >
+        
+    </app-circle-selector>
+
+
+</div>
+
+<!-- <button (click)="save()" class="save">Save</button> -->
 <!-- <button (click)="next()" class="save next">Next</button> -->
