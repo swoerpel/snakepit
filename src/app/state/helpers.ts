@@ -10,7 +10,7 @@ export var round = (N,decimals = 6) => {
 }
 
 export var removeDuplicates = <T>(arr: T[],key: string = 'id'): T[] => 
-  arr.filter((v,i,a) => a.findIndex(t=> (t[key] === v[key])) === i)
+  arr.filter((v,i,a) => a.findIndex(t => (JSON.stringify(t) === JSON.stringify(v))) === i)
 
 
 export var randHex = (): string => {
@@ -249,11 +249,11 @@ export function getRadialVertices(
   const angle = Math.PI * 2 / vertices
   const points: Point[] = []
   const orientation = Math.PI / vertices // -> pointy top : 0 -> flat top
-  rotation = rotation / (Math.PI * 2);
+  rotation = rotation * Math.PI / 180;
   for (let a = -angle; a < Math.PI * 2 * (1 - 1 / vertices); a += angle) {
       let sx = origin.x + Math.cos(a + orientation + rotation) * radius;
       let sy = origin.y + Math.sin(a + orientation + rotation) * radius;
-      points.push({ x: sx, y: sy })
+      points.push({ x: round(sx), y: round(sy) })
   }
   return points
 }

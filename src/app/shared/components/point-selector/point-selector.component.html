@@ -1,20 +1,60 @@
 <div class="container">
     <div class="row">
-        <div (click)="selectCell(Option.TL)" class="cell card button noselect">{{Option.TL}}</div>
-        <div (click)="selectCell(Option.TC)" class="cell card button noselect">{{Option.TC}}</div>
-        <div (click)="selectCell(Option.TR)" class="cell card button noselect">{{Option.TR}}</div>
+        <div (click)="selectCell(Option.TL)" 
+            [ngClass]="option === Option.TL ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.TL}}
+        </div>
+        <div (click)="selectCell(Option.TC)" 
+            [ngClass]="option === Option.TC ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.TC}}
+        </div>
+        <div (click)="selectCell(Option.TR)" 
+            [ngClass]="option === Option.TR ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.TR}}
+        </div>
     </div>
     <div class="row">
-        <div (click)="selectCell(Option.L)" class="cell card button noselect">{{Option.L}}</div>
-        <div (click)="selectCell(Option.C)" class="cell card button noselect">{{Option.C}}</div>
-        <div (click)="selectCell(Option.R)" class="cell card button noselect">{{Option.R}}</div>
+        <div (click)="selectCell(Option.L)"
+            [ngClass]="option === Option.L ? 'selected':''" 
+            class="cell card button noselect">
+            {{Option.L}}
+        </div>
+        <div (click)="selectCell(Option.C)" 
+            [ngClass]="option === Option.C ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.C}}
+        </div>
+        <div (click)="selectCell(Option.R)" 
+            [ngClass]="option === Option.R ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.R}}
+        </div>
     </div>
     <div class="row">
-        <div (click)="selectCell(Option.BL)" class="cell card button noselect">{{Option.BL}}</div>
-        <div (click)="selectCell(Option.BC)" class="cell card button noselect">{{Option.BC}}</div>
-        <div (click)="selectCell(Option.BR)" class="cell card button noselect">{{Option.BR}}</div>
+        <div (click)="selectCell(Option.BL)" 
+            [ngClass]="option === Option.BL ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.BL}}
+        </div>
+        <div (click)="selectCell(Option.BC)" 
+            [ngClass]="option === Option.BC ? 'selected':''"
+            class="cell card button noselect">
+            {{Option.BC}}
+        </div>
+        <div (click)="selectCell(Option.BR)"
+            [ngClass]="option === Option.BR ? 'selected':''" 
+            class="cell card button noselect">
+            {{Option.BR}}
+        </div>
     </div>
     <div class="row">
-        <div (click)="selectCell(Option.Rand)" class="cell card button noselect">{{Option.Rand}}</div>
+        <div (click)="selectCell(Option.Rand)"
+            [ngClass]="option === Option.Rand ? 'selected':''" 
+            class="cell card button noselect">
+            {{Option.Rand}}
+        </div>
     </div>
 </div>

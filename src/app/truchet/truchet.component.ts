@@ -74,6 +74,8 @@ export class TruchetComponent implements OnInit {
   public points: Point[] = [];
 
   public rangeValues = [1,2,3,4,6];
+  startCircle: Point[];
+  endCircle: Point[];
 
   constructor(
     private wolframService: WolframService,
@@ -121,23 +123,63 @@ export class TruchetComponent implements OnInit {
   }
 
 
-  public circleSelected(points: Point[]){
-    console.log('points',points)
-    // const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
-    // this.quadTreeService.drawQuadTreeGridLines(
-    //   quadTree,
-    //   this.svg,
-    //   this.xScale,
-    //   this.yScale,
-    // );
-    this.svg.innerHTML = '';
+  public startCircleSelected(points: Point[]){
+    console.log("start points",points)
+    this.startCircle = [...points];
     this.drawingService.drawPoints(
-      points,
+      this.startCircle,
       this.svg,
       this.xScale,
       this.yScale,
-      0.025
-    );
+    ); 
+  }
+  public endCircleSelected(points: Point[]){
+    console.log("end points",points)
+    this.endCircle = [...points];
+    this.drawingService.drawPoints(
+      this.endCircle,
+      this.svg,
+      this.xScale,
+      this.yScale,
+    ); 
+  }
+
+  public connectCircles(){
+    console.log("this.startCircle",this.startCircle);
+    console.log("this.endCircle",this.endCircle);
+    // each vertex on larger circle to every vertext of smaller circle
+    // return array of lines;
+
+
+
+
+    let minPointCircle!: Point[];
+    let maxPointCircle!: Point[];
+    if(this.startCircle.length > this.endCircle.length){
+      maxPointCircle = [...this.startCircle];
+      minPointCircle = [...this.endCircle];
+    }else{
+      maxPointCircle = [...this.endCircle];
+      minPointCircle = [...this.startCircle];
+    }
+
+    const lines: Point[][] = [];
+    maxPointCircle.forEach((pMax: Point) => {
+      minPointCircle.forEach((pMin: Point) => {
+        lines.push([{...pMin},{...pMax}]);
+      })
+    })
+
+    this.svg.innerHTML = '';
+    lines.forEach(([start,end]: Point[]) => this.drawingService.drawLine(
+      start,
+      end,
+      this.svg,
+      this.xScale,
+      this.yScale,
+      0.04
+    ))
+    
   }
 
   ngOnInit(): void {

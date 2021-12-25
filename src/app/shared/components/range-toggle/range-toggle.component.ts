@@ -14,6 +14,7 @@ export interface RangeToggleOutput{
 })
 export class RangeToggleComponent implements OnInit {
   @Input() range: number[] = [];
+  @Input() initialValues: number[] = [];
   @Input() label: string = '';
   @Input() multiToggle: boolean = false;
   @Input() showSummary: boolean = false;
@@ -29,6 +30,7 @@ export class RangeToggleComponent implements OnInit {
 
   ngOnInit(): void {
     this.resetRangeToggleDict();
+    this.initialValues.forEach(v => this.valueSelected(v));
   }
 
   public valueSelected(value: number){
@@ -52,6 +54,7 @@ export class RangeToggleComponent implements OnInit {
       });
     }
   }
+
 
   private resetRangeToggleDict(){
     this.toggleValueDict = this.range.reduce((dict: Record<string,boolean>,value: number) => {
