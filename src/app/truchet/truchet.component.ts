@@ -305,14 +305,14 @@ export class TruchetComponent implements OnInit {
         ),
         //=======================
         // ...this.fractalService.generateIFSFractal(null,density)
-        ...this.fractalService.generateIFSFractal(paramGroup,density)
+        // ...this.fractalService.generateIFSFractal(paramGroup,density)
         //=======================
       ];
 
       const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
       this.drawWingedTileGroup(quadTree);
       // this.drawQuadTree(quadTree);
-      // this.drawPointGroup(points);
+      this.drawPointGroup(points);
     })
   }
 
@@ -369,7 +369,7 @@ export class TruchetComponent implements OnInit {
     let wingedTiles: WingedTile[] = this.truchetService.generateWingedTiles(tiles,permutationCount);
     wingedTiles = shuffle(wingedTiles);
     // wingedTiles = wingedTiles.reverse();
-    const colorCount = 2;
+    const colorCount = 5;
     const colors = this.colorService.createColorList('random',colorCount);
     // const colors = [this.colorLight,this.colorDark]
     const opcScale = scaleLog().domain([0,1]).range([1,1]);
