@@ -15,7 +15,7 @@ import { RangeToggleOutput } from '../shared/components/range-toggle/range-toggl
 import { Dims, Point, Rect } from '../shared/models';
 import { DrawOptions } from '../shared/models/draw-options.model';
 import { StyleOptions } from '../shared/models/style-options.model';
-import { arrayRotate, assignRandGridValues, findRectsByValue, generateLine, getRadialVertices, pickWeightRandom, removeDuplicates, roundPoints, shuffle } from '../state/helpers';
+import { arrayRotate, assignRandGridValues, findRectsByValue, generateLine, getHorizontalSinWave, getRadialVertices, pickWeightRandom, randPoint, removeDuplicates, roundPoints, shuffle } from '../state/helpers';
 import { WingedTile } from './truchet.models';
 
 
@@ -244,7 +244,7 @@ export class TruchetComponent implements OnInit {
     //       "p": 0.5
     //   }
     // ];
-    const density = 200;
+    const density = 2000;
     const count = 200;
 
     const points: Point[] = [
@@ -263,7 +263,7 @@ export class TruchetComponent implements OnInit {
         // ),
         //=======================
         // ...getRadialVertices(
-        //   {x: 0.5, y: 0.5},
+        //   {x: 0.75, y: 0.5},
         //   0.4,
         //   density,
         // ),
@@ -293,24 +293,24 @@ export class TruchetComponent implements OnInit {
         //   {x: 0, y: 0.5},
         //   100,
         // ),
-        // ...generateLine(
-        //   {x: 0, y: 0.5},
-        //   {x: 1, y: 0},
-        //   50,
-        // ),
-        // ...generateLine(
-        //   randPoint(),
-        //   randPoint(),
-        //   density,
-        // ),
+        ...generateLine(
+          {x: 0, y: 0.5},
+          {x: 1, y: 0},
+          50,
+        ),
+        ...generateLine(
+          randPoint(),
+          randPoint(),
+          50,
+        ),
         //=======================
         // ...this.fractalService.generateIFSFractal(null,density)
-        // ...this.fractalService.generateIFSFractal(paramGroup,density)
+        ...this.fractalService.generateIFSFractal(paramGroup,density)
         //=======================
       ];
 
       const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
-      // this.drawWingedTileGroup(quadTree);
+      this.drawWingedTileGroup(quadTree);
       // this.drawQuadTree(quadTree);
       // this.drawPointGroup(points);
     })
@@ -319,7 +319,7 @@ export class TruchetComponent implements OnInit {
   // DRAW POINTS
   public drawPointGroup(points: Point[]): void{
     const colors = this.colorService.createColorList('Oranges',3);
-    const rMax = 0.005;
+    const rMax = 0.002;
     const rStep = rMax * .6;
     const groupCount = 1;
     // const mods = [1,2,3,4,5];
@@ -370,8 +370,8 @@ export class TruchetComponent implements OnInit {
     wingedTiles = shuffle(wingedTiles);
     // wingedTiles = wingedTiles.reverse();
     const colorCount = 2;
-    // const colors = this.colorService.createColorList('random',colorCount);
-    const colors = [this.colorLight,this.colorDark]
+    const colors = this.colorService.createColorList('random',colorCount);
+    // const colors = [this.colorLight,this.colorDark]
     const opcScale = scaleLog().domain([0,1]).range([1,1]);
     const colorOffset = 1 + Math.floor(Math.random() * colorCount);
     wingedTiles.forEach((wingedTile: WingedTile, i: number) => {
@@ -393,39 +393,43 @@ export class TruchetComponent implements OnInit {
     console.log('quadtree',quadTree);
     // const swRadio = 0.1;
     const sw = 0.5;
-     const colorCount = 9;
-    const colors = this.colorService.createColorList('random',colorCount);
-    const strokes = arrayRotate([...colors],Math.floor(colorCount * 0) || 1)
-    console.log(colors)
+    //  const colorCount = 9;
+    // const colors = this.colorService.createColorList('random',colorCount);
+    // const strokes = arrayRotate([...colors],Math.floor(colorCount * 0) || 1)
+    // console.log(colors)
     const drawOptions: DrawOptions = {
       svg: this.svg,
       xScale: this.xScale,
       yScale: this.yScale,
     }
     const styleOptions: StyleOptions = {
-      stroke: strokes,
-      fill: colors,
+      stroke: 'black',
+      fill: 'transparent',
       strokeWidth: sw,
       opacity: 1,
     }
-    this.quadTreeService.drawQuadTreeGridRects(
-      quadTree,
-      drawOptions,
-      styleOptions
-    );
-    // this.quadTreeService.drawQuadTreeGridLines(
+    // this.quadTreeService.drawQuadTreeGridRects(
     //   quadTree,
-    //   0,
-    //   this.svg,
-    //   this.xScale,
-    //   this.yScale,
-    //   // this.colorLight,
-    //   colors,
-    //   strokes,
-    //   sw,
-    //   1,
-    //   false
+    //   drawOptions,
+    //   styleOptions
     // );
+    // this.quadTreeService.drawQuadTreeGridRects(
+    //   quadTree,
+    //   drawOptions,
+    //   styleOptions
+    // );
+    this.quadTreeService.drawQuadTreeGridLines(
+      quadTree,
+      this.svg,
+      this.xScale,
+      this.yScale,
+      0,
+      this.colorLight,
+      this.colorDark,
+      0.002,
+      1,
+      true
+    );
   }
 
   public generateCanvasCells(): Rect[] {
