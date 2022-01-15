@@ -278,12 +278,34 @@ export function generateLine(p1: Point,p2: Point,segments = 10): Point[] {
   const dy = p2.y - p1.y;
   const xStep = dx / segments;
   const yStep = dy / segments;
+
   const points = [{...p1}];
   for(let i = 0; i < segments; i++){
     const x = p1.x + xStep * i;
     const y = p1.y + yStep * i;
     points.push({x,y});
   } 
+  return points;
+
+}
+
+export function generatePointGrid(dims: Dims, padding: Point, density = 1): Point[] {
+  const points = [];
+  const gridWidth = 1 - padding.x * 2;
+  const gridHeight = 1 - padding.y * 2;
+  const dw = gridWidth / dims.width;
+  const dh = gridHeight / dims.height;
+  for(let i = 0; i < dims.height; i++){
+    for(let j = 0; j < dims.width; j++){
+      const d = Math.floor(Math.random()* density) + 1;
+      for(let k = 0; k < d; k++){
+        points.push({
+          x: padding.x + dw * j + dw / 2,
+          y: padding.y + dh * i + dh / 2,
+        })
+      }
+    }
+  }
   return points;
 
 }
@@ -302,4 +324,63 @@ export function generateRandLine(
     y: min.y + (max.y * Math.random()),
   };
   return generateLine(p1,p2,segments);
+}
+
+export function filterOverlappingRectsByLargest(rects: Rect[]): Rect[]{
+  const rectDict = rects.reduce((dict,rect) => {
+    const key = `${rect.x}-${rect.y}`
+    if(key in dict){
+      dict[key].push(rect);
+    }else{
+      dict[key] = [rect];
+    }
+    return dict;
+  },{})
+  const filteredRects = Object.entries(rectDict).reduce((uniqueRects: Rect[], [key,rects]:[string,Rect[]] ) => {
+    const smallestRect = rects.reduce((smallest:Rect, next: Rect) => {
+      const smallestArea = smallest.width * smallest.height
+      const nextArea = next.width * next.height;
+      if(nextArea < smallestArea){
+        return next;
+      }else{
+        return smallest;
+      }
+    },rects[0])
+    uniqueRects.push(smallestRect);
+    return uniqueRects;
+  },[])
+  return filteredRects;
+}
+
+export function orderRectsByValue(rects: Rect[]): Rect[]{
+  const rectDict = rects.reduce((dict,rect) => {
+    if(rect.value in dict){
+      dict[rect.value].push(rect);
+    }else{
+      dict[rect.value] = [rect];
+    }
+    return dict;
+  },{});
+  console.log('rectDict',rectDict)
+  const extrema: Extrema = Object.keys(rectDict).reduce((ext, value) => {
+    const val = parseInt(value);
+    let min = ext.min;
+    let max = ext.max;
+    if(val < ext.min){
+      min = val;
+    }
+    if(val > ext.max){
+      max = val;
+    }
+    return {min,max};
+  },{min: 1000, max: -1000})
+  let orderedRects = [];
+  console.log("extrema",extrema)
+  if(extrema.min === extrema.max){
+    return rectDict[extrema.min.toString()];
+  }
+  for(let i = extrema.min; i < (extrema.max + 1); i++){
+    orderedRects = orderedRects.concat(rectDict[i.toString()]);
+  }
+  return orderedRects;
 }

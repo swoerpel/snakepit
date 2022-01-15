@@ -15,7 +15,7 @@ import { RangeToggleOutput } from '../shared/components/range-toggle/range-toggl
 import { Dims, Point, Rect } from '../shared/models';
 import { DrawOptions } from '../shared/models/draw-options.model';
 import { StyleOptions } from '../shared/models/style-options.model';
-import { arrayRotate, assignRandGridValues, findRectsByValue, generateLine, getHorizontalSinWave, getRadialVertices, pickWeightRandom, randPoint, removeDuplicates, roundPoints, shuffle } from '../state/helpers';
+import { arrayRotate, assignRandGridValues, filterOverlappingRectsByLargest, findRectsByValue, generateLine, generatePointGrid, generateRandLine, getHorizontalSinWave, getRadialVertices, orderRectsByValue, pickWeightRandom, randPoint, removeDuplicates, roundPoints, shuffle } from '../state/helpers';
 import { WingedTile } from './truchet.models';
 
 
@@ -48,8 +48,8 @@ export class TruchetComponent implements OnInit {
   // public colorDark = 'black';
   // public colorDark = 'white';
   public canvasDims: Dims = {
-    width: 600,
-    height: 600,
+    width: 4800,
+    height: 4800,
   }
   public canvasGridDims: Dims = {
     width: 1,
@@ -244,8 +244,8 @@ export class TruchetComponent implements OnInit {
     //       "p": 0.5
     //   }
     // ];
-    const density = 2000;
-    const count = 200;
+    const density = 200;
+    // const count = 200;
 
     const points: Point[] = [
         //=======================
@@ -263,7 +263,22 @@ export class TruchetComponent implements OnInit {
         // ),
         //=======================
         // ...getRadialVertices(
-        //   {x: 0.75, y: 0.5},
+        //   {x: 0.5, y: 0.5},
+        //   0.1,
+        //   density,
+        // ),
+        // ...getRadialVertices(
+        //   {x: 0, y: 0.5},
+        //   0.2,
+        //   density,
+        // ),
+        // ...getRadialVertices(
+        //   {x: 0.5, y: 0.5},
+        //   0.3,
+        //   density,
+        // ),
+        // ...getRadialVertices(
+        //   {x: 0.5, y: 0.5},
         //   0.4,
         //   density,
         // ),
@@ -272,8 +287,13 @@ export class TruchetComponent implements OnInit {
         //   0.5,
         //   density,
         // ),
-        //=======================
-        // ...new Array(count).fill(0).reduce((ary,_,i) => 
+        // ...getRadialVertices(
+        //   {x: Math.random(), y: Math.random()},
+        //   0.75,
+        //   density,
+        // ),
+        // =======================
+        // ...new Array(12).fill(0).reduce((ary,_,i) => 
         //   ary.concat( generateRandLine(
         //     {x: 0, y: 0},
         //     {x: 1, y: 1},
@@ -293,16 +313,51 @@ export class TruchetComponent implements OnInit {
         //   {x: 0, y: 0.5},
         //   100,
         // ),
-        ...generateLine(
-          {x: 0, y: 0.5},
-          {x: 1, y: 0},
-          50,
-        ),
-        ...generateLine(
-          randPoint(),
-          randPoint(),
-          50,
-        ),
+        // ...generateLine(
+        //   {x: 0, y: 0.5},
+        //   {x: 1, y: 0},
+        //   50,
+        // ),
+        // ...generateLine(
+        //   randPoint(),
+        //   randPoint(),
+        //   50,
+        // ),
+        // ...generatePointGrid(
+        //   {width: 4,height: 4},
+        //   {x: 0.1,y:0.1},
+        //   1,
+        // ),
+        // ...(new Array(4).fill(Math.floor(Math.random() * 24) + 1).reduce((ary,val)=>{
+        //   return ary.concat(generatePointGrid(
+        //     {width: 8,height: 8},
+        //     {x: 0,y:0},
+        //     1,
+        //   ).filter((_,i) => i % val === 0));
+        // },[]))
+        ...generatePointGrid(
+          {width: 8,height: 8},
+          {x: 0.2,y:0.2},
+          5
+        )
+        // ).filter((_,i) => i % 3 === 0),
+        // {x: 0.6,y: 0.6},
+        // {x: 0.6,y: 0.6},
+        // ...generatePointGrid(
+        //   {width: Math.floor(Math.random()*12),height: Math.floor(Math.random()*12)},
+        //   {x: 0,y:0},
+        //   1,
+        // ),
+        // ...generatePointGrid(
+        //   {width: Math.floor(Math.random()*12),height: Math.floor(Math.random()*12)},
+        //   {x: 0,y:0},
+        //   1,
+        // ),
+        // ...generatePointGrid(
+        //   {width: Math.floor(Math.random()*12),height: Math.floor(Math.random()*12)},
+        //   {x: 0,y:0},
+        //   3,
+        // ),
         //=======================
         // ...this.fractalService.generateIFSFractal(null,density)
         // ...this.fractalService.generateIFSFractal(paramGroup,density)
@@ -312,14 +367,14 @@ export class TruchetComponent implements OnInit {
       const quadTree: QuadTree = this.quadTreeService.generateQuadTree(points);
       this.drawWingedTileGroup(quadTree);
       // this.drawQuadTree(quadTree);
-      this.drawPointGroup(points);
+      // this.drawPointGroup(points);
     })
   }
 
   // DRAW POINTS
   public drawPointGroup(points: Point[]): void{
     const colors = this.colorService.createColorList('Oranges',3);
-    const rMax = 0.002;
+    const rMax = 0.005;
     const rStep = rMax * .6;
     const groupCount = 1;
     // const mods = [1,2,3,4,5];
@@ -346,7 +401,7 @@ export class TruchetComponent implements OnInit {
         rMax - (rStep * i),
         // colors[i % colors.length],
         // i % 2 === 0 ? this.colorLight : this.colorDark,
-        this.colorLight,
+        'orange',// this.colorLight,
         1,//opacityOss,
       );  
     }
@@ -356,27 +411,24 @@ export class TruchetComponent implements OnInit {
 
   public drawWingedTileGroup(quadTree: QuadTree){
     let tiles: Rect[] = this.quadTreeService.getRectsFromQuadTree(quadTree);
-    tiles = [
-      ...findRectsByValue(tiles, 2),
-      ...findRectsByValue(tiles, 3),
-      ...findRectsByValue(tiles, 4),
-      ...findRectsByValue(tiles, 5),
-      // ...findRectsByValue(tiles, 6),
-      // ...findRectsByValue(tiles, 7),
-    ]
-    const permutationCount = 2;
-    assignRandGridValues(tiles,permutationCount,true);
+    console.log('tiles',tiles);
+    const permutationCount = 10;
+    // assignRandGridValues(tiles,permutationCount,true);
     let wingedTiles: WingedTile[] = this.truchetService.generateWingedTiles(tiles,permutationCount);
-    wingedTiles = shuffle(wingedTiles);
+    // wingedTiles = shuffle(wingedTiles);
     // wingedTiles = wingedTiles.reverse();
-    const colorCount = 5;
+    const colorCount = 8;
     const colors = this.colorService.createColorList('random',colorCount);
     // const colors = [this.colorLight,this.colorDark]
     const opcScale = scaleLog().domain([0,1]).range([1,1]);
-    const colorOffset = 1 + Math.floor(Math.random() * colorCount);
     wingedTiles.forEach((wingedTile: WingedTile, i: number) => {
-      const c1 = colors[i % colors.length];
-      const c2 = colors[(i + colorOffset) % colors.length];
+      let c2 = this.colorDark;
+      let c1 = colors[i % colors.length];
+      if(wingedTile.rect.value % 2 === 0){
+        [c1,c2] = [c2,c1]
+      }
+      // const c1 = colors[i % colors.length];
+      // const c2 = colors[(i + colorOffset) % colors.length];
       const opacity = opcScale(i / wingedTiles.length);
       this.truchetService.drawWingedTile(
         this.svg,
@@ -397,17 +449,17 @@ export class TruchetComponent implements OnInit {
     // const colors = this.colorService.createColorList('random',colorCount);
     // const strokes = arrayRotate([...colors],Math.floor(colorCount * 0) || 1)
     // console.log(colors)
-    const drawOptions: DrawOptions = {
-      svg: this.svg,
-      xScale: this.xScale,
-      yScale: this.yScale,
-    }
-    const styleOptions: StyleOptions = {
-      stroke: 'black',
-      fill: 'transparent',
-      strokeWidth: sw,
-      opacity: 1,
-    }
+    // const drawOptions: DrawOptions = {
+    //   svg: this.svg,
+    //   xScale: this.xScale,
+    //   yScale: this.yScale,
+    // }
+    // const styleOptions: StyleOptions = {
+    //   stroke: 'white',
+    //   fill: 'transparent',
+    //   strokeWidth: sw,
+    //   opacity: 1,
+    // }
     // this.quadTreeService.drawQuadTreeGridRects(
     //   quadTree,
     //   drawOptions,
@@ -425,7 +477,8 @@ export class TruchetComponent implements OnInit {
       this.yScale,
       0,
       this.colorLight,
-      this.colorDark,
+      // this.colorDark,
+      'transparent',
       0.002,
       1,
       true

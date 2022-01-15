@@ -16,8 +16,10 @@ export class TruchetService {
       ): WingedTile[] {
         const tilePermutationsKeys: string[] = Object.keys(TILE_MAP);
         const permutations: number[] = new Array(permutationCount).fill(0).map((_,i) => 
+          // [7,2,9,10][i % 4] 
             Math.floor(Math.random() * tilePermutationsKeys.length)
         );
+        console.log('permutations',permutations)
 
         return tiles.map((tile: Rect) => {
           const key = permutations[tile.value % permutations.length];

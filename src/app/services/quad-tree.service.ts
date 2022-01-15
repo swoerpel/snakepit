@@ -3,7 +3,7 @@ import { analyze } from 'chroma.ts';
 import { Point, Rect } from '../shared/models';
 import { DrawOptions } from '../shared/models/draw-options.model';
 import { StyleOptions } from '../shared/models/style-options.model';
-import { randHex } from '../state/helpers';
+import { filterOverlappingRectsByLargest, orderRectsByValue, randHex } from '../state/helpers';
 import { QuadTree, Rectangle } from './quadtree';
 
 @Injectable({
@@ -46,7 +46,10 @@ export class QuadTreeService {
       }
     }
     getRects(qtree,0);
-    return rects;
+
+    return orderRectsByValue(
+      filterOverlappingRectsByLargest(rects)
+    );
   }
 
   public drawQuadTree(
