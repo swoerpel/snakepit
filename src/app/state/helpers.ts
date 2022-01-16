@@ -297,8 +297,8 @@ export function generatePointGrid(dims: Dims, padding: Point, density = 1): Poin
   const dh = gridHeight / dims.height;
   for(let i = 0; i < dims.height; i++){
     for(let j = 0; j < dims.width; j++){
-      const d = Math.floor(Math.random()* density) + 1;
-      for(let k = 0; k < d; k++){
+      // const d = Math.floor(Math.random()* density) + 1;
+      for(let k = 0; k < density; k++){
         points.push({
           x: padding.x + dw * j + dw / 2,
           y: padding.y + dh * i + dh / 2,

@@ -22,8 +22,8 @@ export class TruchetService {
         console.log('permutations',permutations)
 
         return tiles.map((tile: Rect) => {
-          const key = permutations[tile.value % permutations.length];
-          
+          const key = permutations[Math.floor(Math.random() * permutations.length)];
+          // const key = permutations[tile.value % permutations.length];
           const { straights, curves } = TILE_MAP[tilePermutationsKeys[key]];
           return this.generateWingedTile(tile,straights,curves)
         });
